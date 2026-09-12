@@ -19,7 +19,7 @@ public class ReseniaDAOimple implements ReseniaDAO {
      * Guarda una nueva reseña en la base de datos.
      */
     @Override
-    public void guardar(Resenia resenia) {
+    public boolean guardar(Resenia resenia) {
         String sql = "INSERT INTO Resena (UsuarioID, PeliculaID, Comentario, Puntaje, Aprobada, FechaHora) VALUES (?, ?, ?, ?, ?, ?)";
         Connection conn = ConexionBD.getConnection();
 
@@ -30,9 +30,10 @@ public class ReseniaDAOimple implements ReseniaDAO {
             pstmt.setInt(4, resenia.getCalificacion());
             pstmt.setBoolean(5, true);
             pstmt.setString(6, LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-            pstmt.executeUpdate();
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error al guardar reseña: " + e.getMessage());
+            return false;
         }
     }
 

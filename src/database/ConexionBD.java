@@ -3,6 +3,7 @@ package database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Gestor de conexión a base de datos SQLite.
@@ -33,6 +34,9 @@ public class ConexionBD {
         if (connection == null) {
             try {
                 connection = DriverManager.getConnection(URL_SQLITE);
+                try (Statement stmt = connection.createStatement()) {
+                    stmt.execute("PRAGMA foreign_keys = ON;");
+                }
                 System.out.println("Conexión a SQLite establecida con éxito.");
             } catch (SQLException e) {
                 System.err.println("Error al conectar con la base de datos: " + e.getMessage());
@@ -52,6 +56,8 @@ public class ConexionBD {
                 System.out.println("Conexión a SQLite cerrada.");
             } catch (SQLException e) {
                 System.err.println("Error al cerrar la conexión a la base de datos: " + e.getMessage());
+            } finally {
+                connection = null;
             }
         }
     }

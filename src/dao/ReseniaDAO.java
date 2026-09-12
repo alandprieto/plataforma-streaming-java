@@ -8,8 +8,10 @@ import modelo.Resenia;
 public interface ReseniaDAO {
     /**
      * Guarda una nueva reseña en la base de datos.
+     *
+     * @return true si la reseña se guardó correctamente, false en caso de error.
      */
-    void guardar(Resenia resenia);
+    boolean guardar(Resenia resenia);
 
     /**
      * Verifica si existe una reseña de un usuario para una película.

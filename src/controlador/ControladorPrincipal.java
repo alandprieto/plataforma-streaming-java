@@ -41,7 +41,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 
@@ -50,6 +52,7 @@ public class ControladorPrincipal implements ActionListener {
     private VistaPrincipal vista;
     private Usuario usuario;
     private List<Pelicula> peliculasActuales;
+    private static final Map<String, ImageIcon> CACHE_POSTERS = new HashMap<>();
 
     /**
      * Inicializa el controlador principal con la vista y el servicio.
@@ -321,18 +324,30 @@ public class ControladorPrincipal implements ActionListener {
 
     /**
      * Carga el poster de una película de forma asíncrona en un hilo aparte.
-     * Evita bloquear la interfaz mientras se descarga la imagen.
+     * Evita bloquear la interfaz mientras se descarga la imagen y reutiliza
+     * los posteres ya descargados para no repetir peticiones de red.
      */
     private void cargarImagenAsync(String urlString, JLabel labelDestino) {
+        if (urlString == null || urlString.isEmpty()) {
+            labelDestino.setText("Sin Imagen");
+            return;
+        }
+
+        ImageIcon enCache = CACHE_POSTERS.get(urlString);
+        if (enCache != null) {
+            labelDestino.setIcon(enCache);
+            labelDestino.setText("");
+            return;
+        }
+
         Thread hilo = new Thread(() -> {
             try {
-                if (urlString == null || urlString.isEmpty())
-                    throw new Exception("No URL");
                 URL url = new URI(urlString).toURL();
                 BufferedImage img = ImageIO.read(url);
                 if (img != null) {
                     Image scaled = img.getScaledInstance(150, 225, Image.SCALE_SMOOTH);
                     ImageIcon icon = new ImageIcon(scaled);
+                    CACHE_POSTERS.put(urlString, icon);
                     SwingUtilities.invokeLater(() -> {
                         labelDestino.setText("");
                         labelDestino.setIcon(icon);

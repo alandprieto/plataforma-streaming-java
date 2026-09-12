@@ -138,7 +138,7 @@ public class AutoCargaPeliculas {
             System.out.println(">>> LÍNEAS LEÍDAS: " + totales + ", CARGADAS: " + cargadas + ", SALTADAS: " + saltadas);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error al leer el archivo CSV: " + e.getMessage());
             try {
                 if (conn != null)
                     conn.rollback();

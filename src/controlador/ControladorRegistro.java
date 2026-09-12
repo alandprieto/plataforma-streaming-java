@@ -29,14 +29,35 @@ public class ControladorRegistro implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == vistaReg.btnGuardar) {
-            try {
-                long dni = Long.parseLong(vistaReg.txtDNI.getText());
-                String nom = vistaReg.txtNombre.getText();
-                String ape = vistaReg.txtApellido.getText();
-                String email = vistaReg.txtEmail.getText();
-                String pass = new String(vistaReg.txtPassword.getPassword());
+            String nom = vistaReg.txtNombre.getText().trim();
+            String ape = vistaReg.txtApellido.getText().trim();
+            String email = vistaReg.txtEmail.getText().trim();
+            String pass = new String(vistaReg.txtPassword.getPassword());
+            String confirm = new String(vistaReg.txtConfirmarPassword.getPassword());
 
-                if(nom.isEmpty() || email.isEmpty()) throw new Exception("Campos vacíos");
+            if (nom.isEmpty() || ape.isEmpty()) {
+                mostrarAdvertencia("Nombre y apellido son obligatorios.");
+                return;
+            }
+            if (email.length() < 5 || !email.contains("@") || email.indexOf("@") != email.lastIndexOf("@")) {
+                mostrarAdvertencia("Ingresá un email válido.");
+                return;
+            }
+            if (pass.length() < 6) {
+                mostrarAdvertencia("La contraseña debe tener al menos 6 caracteres.");
+                return;
+            }
+            if (!pass.equals(confirm)) {
+                mostrarAdvertencia("Las contraseñas no coinciden.");
+                return;
+            }
+
+            try {
+                long dni = Long.parseLong(vistaReg.txtDNI.getText().trim());
+                if (dni <= 0) {
+                    mostrarAdvertencia("Ingresá un DNI válido.");
+                    return;
+                }
 
                 Cliente c = new Cliente(dni, nom, ape, email, pass);
                 servicio.registrarCliente(c);
@@ -56,5 +77,12 @@ public class ControladorRegistro implements ActionListener {
             vistaReg.cerrar();
             vistaLogin.iniciar();
         }
+    }
+
+    /**
+     * Muestra una advertencia de validación al usuario.
+     */
+    private void mostrarAdvertencia(String mensaje) {
+        JOptionPane.showMessageDialog(vistaReg, mensaje, "Datos inválidos", JOptionPane.WARNING_MESSAGE);
     }
 }

@@ -75,21 +75,23 @@ public class ControladorLogin implements ActionListener {
                 @Override
                 protected Void doInBackground() throws Exception {
                     AutoCargaPeliculas.cargarSiExiste(servicio);
-                    try {
-                        Thread.sleep(1500);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
                     return null;
                 }
 
                 @Override
                 protected void done() {
                     dialog.dispose();
-                    vistaLogin.cerrar();
-                    VistaPrincipal vp = new VistaPrincipal();
-                    new ControladorPrincipal(servicio, vp, u);
-                    vp.setVisible(true);
+                    try {
+                        get();
+                        vistaLogin.cerrar();
+                        VistaPrincipal vp = new VistaPrincipal();
+                        new ControladorPrincipal(servicio, vp, u);
+                        vp.setVisible(true);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(vistaLogin,
+                                "No se pudo cargar el catálogo: " + ex.getMessage(),
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             };
 

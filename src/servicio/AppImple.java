@@ -80,7 +80,10 @@ public class AppImple {
             throw new DatoInvalidoException("Ya has calificado esta película anteriormente.");
         }
 
-        this.reseniaDAO.guardar(nuevaResenia);
+        boolean exito = this.reseniaDAO.guardar(nuevaResenia);
+        if (!exito) {
+            throw new DatoInvalidoException("No se pudo guardar tu reseña. Inténtalo nuevamente.");
+        }
     }
 
     /**

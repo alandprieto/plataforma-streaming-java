@@ -26,6 +26,7 @@ public class VistaRegistro extends JFrame {
     public JTextField txtDNI;
     public JTextField txtEmail;
     public JPasswordField txtPassword;
+    public JPasswordField txtConfirmarPassword;
 
     public JButton btnGuardar;
     public JButton btnCancelar;
@@ -45,7 +46,7 @@ public class VistaRegistro extends JFrame {
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         this.add(lblTitulo, BorderLayout.NORTH);
 
-        JPanel panelForm = new JPanel(new GridLayout(5, 2, 10, 15));
+        JPanel panelForm = new JPanel(new GridLayout(6, 2, 10, 15));
         panelForm.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
 
         panelForm.add(new JLabel("Nombre:"));
@@ -67,6 +68,10 @@ public class VistaRegistro extends JFrame {
         panelForm.add(new JLabel("Contraseña:"));
         txtPassword = new JPasswordField();
         panelForm.add(txtPassword);
+
+        panelForm.add(new JLabel("Confirmar Contraseña:"));
+        txtConfirmarPassword = new JPasswordField();
+        panelForm.add(txtConfirmarPassword);
 
         this.add(panelForm, BorderLayout.CENTER);
 
