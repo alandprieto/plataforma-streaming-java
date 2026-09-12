@@ -1,137 +1,96 @@
-# Proyecto 2 - Plataforma de Streaming (GUI + OMDb)
+# 🎬 Plataforma de Streaming (Java + SQLite + OMDb)
 
-## Descripción General
+Aplicación de escritorio de una plataforma de streaming desarrollada en **Java Swing**, con persistencia en **SQLite** e integración con la **API de OMDb**. Corresponde al Entregable 2 del *Taller de Lenguajes II* (UNLP, 2025) como prueba de concepto.
 
-Este proyecto corresponde al Entregable 2 del Taller de Lenguajes II (2025). Es una plataforma de streaming interactiva con interfaz gráfica (Java Swing) que integra una base de datos SQLite y la API OMDb. Permite a los usuarios navegar películas, ver detalles de la sinopsis desde OMDb, calificar películas, buscar contenido, ordenar por género/título y gestionar sus reseñas. La arquitectura implementa el patrón MVC (Modelo-Vista-Controlador), DAO para acceso a datos y soporta concurrencia en operaciones asincrónicas (cargas de imágenes, consultas OMDb).
+Permite registrar e iniciar sesión, explorar un catálogo de ~10.000 películas precargadas, ver detalles y sinopsis en tiempo real desde OMDb, calificar películas con reseñas y ordenar el catálogo por género o título.
 
-## Aclaraciones sobre Interpretaciones y Diseño
+## ✨ Funcionalidades
 
-Durante el desarrollo, se tomaron ciertas interpretaciones y decisiones de diseño basadas en los requisitos:
+- **Autenticación:** registro de clientes e inicio de sesión con validación de credenciales.
+- **Exploración del catálogo:** Top 10 mejor calificadas, exploración aleatoria y búsqueda en OMDb.
+- **Detalles en vivo:** sinopsis, año y rating IMDb obtenidos de la API OMDb (consulta asincrónica).
+- **Reseñas:** calificación del 1 al 10 con comentario obligatorio y prevención de reseñas duplicadas por usuario.
+- **Ordenamiento:** por género o título sobre el listado visible.
+- **Interfaz no bloqueante:** carga de posteres y consultas HTTP en hilos separados (`SwingWorker` / `invokeLater`).
+- **Persistencia:** SQLite con patrón DAO y precarga automática del catálogo desde un CSV si la base está vacía.
 
-1. **Arquitectura GUI (MVC):**
-   - **Vista:** Clases en `src/vista/` (`VistaPrincipal`, `VistaLogin`, `VistaRegistro`, `VistaDetallesPelicula`, `VistaResultadosBusqueda`) responsables de la interfaz gráfica usando Java Swing.
-   - **Controlador:** Clases en `src/controlador/` (`ControladorPrincipal`, `ControladorLogin`, `ControladorRegistro`) que manejan eventos de la UI y coordinan con la lógica de negocio.
-   - **Modelo:** Clases en `src/modelo/` (`Usuario`, `Cliente`, `Administrador`, `Pelicula`, `Contenido`, `Reseña`, `Staff`) que representan las entidades del sistema.
-   - **DAO:** Patrón DAO implementado en `src/dao/` para acceso centralizado a la base de datos.
+## 🧱 Arquitectura
 
-2. **Integración con OMDb:**
-   - Se implementó un servicio centralizado `ConsultaPeliculasOMDb` en `src/servicio/` que consulta la API OMDb de forma asincrónica.
-   - Las búsquedas y visualización de detalles (título, año, sinopsis, rating) se obtienen en tiempo real desde OMDb.
-   - Se utiliza un diálogo de carga para mejorar la experiencia del usuario durante las consultas a la API.
+El proyecto sigue una arquitectura **MVC** (Modelo-Vista-Controlador) combinada con el patrón **DAO** para el acceso a datos:
 
-3. **Concurrencia:**
-   - Cargas de imágenes (posters) se realizan en hilos separados para no bloquear la UI.
-   - Consultas a OMDb se ejecutan en threads independientes con actualización del UI mediante `SwingUtilities.invokeLater()`.
+- `src/vista/` → Interfaces gráficas con Java Swing.
+- `src/controlador/` → Manejo de eventos de UI y coordinación con la lógica de negocio.
+- `src/modelo/` → Entidades del dominio (`Usuario`, `Pelicula`, `Reseña`, `Contenido`, ...).
+- `src/servicio/` → Lógica de negocio (`AppImple`) e integración con OMDb.
+- `src/dao/` → Interfaces e implementaciones DAO (`Usuario`, `Pelicula`, `Reseña`).
+- `src/database/` → Gestión de la conexión SQLite, creación de tablas y precarga de datos.
 
-4. **Orden y Filtrado:**
-   - Se implementó una clase `Comparador` para ordenar películas por género (`ComparadorPeliculaGenero`) y por título (`ComparadorPeliculaTitulo`).
-   - La pantalla principal muestra un Top 10 de películas (aleatorio o por defecto) con géneros visibles y opciones de ordenamiento.
-
-5. **Base de Datos:**
-   - SQLite con estructura mejorada para soportar ratings, géneros y sincronización con OMDb.
-   - Precarga automática de películas desde un archivo CSV (`movies_database.csv`) al iniciar si la BD está vacía.
-
-6. **Otros:**
-   - La fecha y hora (`FECHA_HORA`) en `RESENIA` se almacena como texto en formato ISO.
-   - Los listados se mantienen ordenados usando `Comparator` de Java.
-   - Excepciones propias: `DatoInvalidoException`, `CredencialesInvalidasException`, `UsuarioYaExisteException`.
-
-
-## Estructura del Proyecto
-
-El proyecto sigue una estructura modular con separación clara de responsabilidades (MVC + DAO):
+## 📁 Estructura del Proyecto
 
 ```
 src/
-├── comparador/              # Clases para ordenamiento de películas y usuarios
-│   ├── ComparadorPeliculaGenero.java
-│   ├── ComparadorPeliculaTitulo.java
-│   ├── ComparadorPeliculaDuracion.java
-│   ├── ComparadorUsuarioEmail.java
-│   └── ComparadorUsuarioNombre.java
-├── controlador/             # Controladores (MVC)
-│   ├── AppGUI.java          # Punto de entrada de la aplicación
-│   ├── ControladorPrincipal.java
-│   ├── ControladorLogin.java
-│   └── ControladorRegistro.java
-├── dao/                     # Interfaces y implementaciones DAO
-│   ├── PeliculaDAO.java
-│   ├── PeliculaDAOimple.java
-│   ├── UsuarioDAO.java
-│   ├── UsuarioDAOimple.java
-│   ├── ReseñaDAO.java
-│   └── ReseñaDAOimple.java
-├── database/                # Gestión de base de datos
-│   ├── ConexionBD.java
-│   ├── SetupBD.java
-│   ├── AutoCargaPeliculas.java
-│   └── movies_database.csv
-├── enums/                   # Enumerativos
-│   └── GeneroPelicula.java
-├── excepciones/             # Excepciones propias
-│   ├── DatoInvalidoException.java
-│   ├── CredencialesInvalidasException.java
-│   └── UsuarioYaExisteException.java
-├── modelo/                  # Clases de modelo
-│   ├── Usuario.java
-│   ├── Cliente.java
-│   ├── Administrador.java
-│   ├── Pelicula.java
-│   ├── Contenido.java
-│   ├── Reseña.java
-│   └── Staff.java
-├── servicio/                # Lógica de negocio
-│   ├── AppImple.java
-│   └── ConsultaPeliculasOMDb.java
-└── vista/                   # Vistas (MVC - Java Swing)
-    ├── VistaLogin.java
-    ├── VistaPrincipal.java
-    ├── VistaRegistro.java
-    ├── VistaDetallesPelicula.java
-    ├── VistaResultadosBusqueda.java
-    └── ...
-bin/                         # Archivos compilados (.class)
-lib/                         # Librerías externas (JSON, SQLite JDBC)
-doc/                         # Documentación Javadoc generada
-streaming.db                 # Base de datos SQLite (generada en tiempo de ejecución)
-compile.bat                  # Script de compilación
+├── comparador/     # Comparadores para ordenar películas y usuarios
+├── controlador/    # Controladores MVC + AppGUI (punto de entrada)
+├── dao/            # Interfaces e implementaciones DAO
+├── database/       # ConexionBD, SetupBD, AutoCargaPeliculas y movies_database.csv
+├── enums/          # GeneroPelicula
+├── excepciones/    # Excepciones propias
+├── modelo/         # Entidades del dominio
+├── servicio/       # AppImple y ConsultaPeliculasOMDb
+└── vista/          # Vistas Swing
+lib/                # Dependencias externas (sqlite-jdbc, json)
+doc/                # Documentación Javadoc generada
+streaming.db        # Base SQLite (se genera la primera vez que se ejecuta)
 ```
 
-## Funcionalidades Principales
+## ✅ Requisitos
 
-- **Autenticación:** Login y registro de usuarios (Cliente/Admin) con validación de credenciales.
-- **Navegación de Películas:** Visualización de Top 10, exploración aleatoria y búsqueda por título.
-- **Integración OMDb:** Consulta de detalles de películas (sinopsis, año, rating) desde OMDb.
-- **Calificación:** Los usuarios pueden calificar películas (1-5 estrellas) y ver promedios.
-- **Ordenamiento:** Opción de ordenar películas mostradas por género o título.
-- **Género Visible:** Cada película muestra su género en la tarjeta de presentación.
-- **Interfaz Responsiva:** Carga asincrónica de imágenes y consultas OMDb sin bloquear la UI.
-- **Base de Datos:** Persistencia con SQLite, precarga automática de películas desde CSV.
+- **JDK 11 o superior** (usa `java.net.http` y lambdas).
+- Las dependencias ya están incluidas en `lib/`:
+  - `sqlite-jdbc-3.50.3.0.jar`
+  - `json-20231013.jar`
+- Conexión a internet para consultar la API de OMDb (opcional; el resto funciona offline).
 
-## Cómo Ejecutar
+## 🚀 Ejecución
 
-1. **Compilar el proyecto:**
-   ```bash
-   javac -encoding UTF-8 -cp "lib/*;src" -d "bin" src/**/*.java
-   ```
+### Opción 1: con el script (Windows)
 
-2. **Ejecutar la aplicación:**
-   ```bash
-   java -cp "bin;lib/*" controlador.AppGUI
-   ```
+```bat
+compile.bat
+java -cp "bin;lib/*" controlador.AppGUI
+```
 
-3. **Credenciales de Prueba (para corrección):**
-   - **Cliente (PRINCIPAL):** `alan@gmail.com` / Contraseña: `12345678`
-   - Admin: `admin1@streaming.com` / Contraseña: `admin123`
+### Opción 2: manual
 
-## Cambios Realizados en Esta Versión
+```bat
+REM Compilar (genera la lista de fuentes y la compila)
+dir /s /b src\*.java > sources.txt
+javac -encoding UTF-8 -cp "lib/*;src" -d "bin" @sources.txt
 
-- Migración de consola a interfaz gráfica (Java Swing).
-- Implementación del patrón MVC con separación clara de vista, controlador y modelo.
-- Integración con la API OMDb para obtener detalles dinámicos de películas.
-- Soporte de concurrencia con hilos para cargas asincrónicas (imágenes, consultas OMDb).
-- Visualización de géneros en tarjetas de películas.
-- Funcionalidad de ordenamiento por género y título.
-- Reutilización de `VistaDetallesPelicula` para evitar duplicación de código UI.
-- Eliminación del botón "Panel Admin" de la pantalla principal.
-- Compilación separada: archivos `.java` en `src/`, archivos `.class` en `bin/`.
+REM Ejecutar
+java -cp "bin;lib/*" controlador.AppGUI
+```
+
+> La base de datos `streaming.db` y el catálogo se crean/cargan automáticamente en el primer inicio si no existen.
+
+### 🔑 Credenciales de prueba
+
+| Rol     | Email                  | Contraseña  |
+| ------- | ---------------------- | ----------- |
+| Cliente | `alan@gmail.com`       | `12345678`  |
+| Admin   | `admin1@streaming.com` | `admin123`  |
+
+También podés registrar un nuevo usuario desde la pantalla de login.
+
+## 🔌 API de OMDb
+
+Las consultas a OMDb usan una API key embebida en `src/servicio/ConsultaPeliculasOMDb.java`. Si la clave deja de funcionar, registrate en [omdbapi.com](https://www.omdbapi.com/apikey.aspx) y reemplazá el valor de `API_KEY`.
+
+## 🧪 Notas de diseño
+
+- Las reseñas se consideran aprobadas al momento de guardarse (el flujo de moderación de administradores no se expone en la UI actual).
+- `streaming.db` y los posteres se almacenan de forma local; el catálogo fuente es `src/database/movies_database.csv`.
+
+## 📌 Proyecto académico
+
+Desarrollado como trabajo práctico del Taller de Lenguajes II. No es un producto comercial: prioriza la demostración de conceptos de persistencia, patrones de diseño y concurrencia en Java.
