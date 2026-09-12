@@ -2,7 +2,7 @@
 
 ![OpenJDK](https://img.shields.io/badge/Java-11%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Swing](https://img.shields.io/badge/UI-Java%20Swing-FF6C37?style=for-the-badge)
-![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
 ![MVC](https://img.shields.io/badge/MVC-Modelo--Vista--Controlador-6f42c1?style=for-the-badge)
 ![DAO](https://img.shields.io/badge/DAO-Acceso%20a%20datos-28a745?style=for-the-badge)
 ![OMDb](https://img.shields.io/badge/API-OMDb-14a0c4?style=for-the-badge)
