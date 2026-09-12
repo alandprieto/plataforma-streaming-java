@@ -1,5 +1,13 @@
 # 🎬 Plataforma de Streaming (Java + SQLite + OMDb)
 
+![OpenJDK](https://img.shields.io/badge/Java-11%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Swing](https://img.shields.io/badge/UI-Java%20Swing-FF6C37?style=for-the-badge)
+![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![MVC](https://img.shields.io/badge/MVC-Modelo--Vista--Controlador-6f42c1?style=for-the-badge)
+![DAO](https://img.shields.io/badge/DAO-Acceso%20a%20datos-28a745?style=for-the-badge)
+![OMDb](https://img.shields.io/badge/API-OMDb-14a0c4?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/alandprieto/ProyectoTL2?style=for-the-badge)
+
 Aplicación de escritorio de una plataforma de streaming desarrollada en **Java Swing**, con persistencia en **SQLite** e integración con la **API de OMDb**. Corresponde al Entregable 2 del *Taller de Lenguajes II* (UNLP, 2025) como prueba de concepto.
 
 Permite registrar e iniciar sesión, explorar un catálogo de ~10.000 películas precargadas, ver detalles y sinopsis en tiempo real desde OMDb, calificar películas con reseñas y ordenar el catálogo por género o título.
