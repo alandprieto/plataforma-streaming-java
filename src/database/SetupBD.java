@@ -1,6 +1,9 @@
 package database;
 
+import util.PasswordUtil;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -15,7 +18,7 @@ public class SetupBD {
             "  Nombre VARCHAR(100) NOT NULL," +
             "  Apellido VARCHAR(100) NOT NULL," +
             "  Email VARCHAR(150) NOT NULL UNIQUE," +
-            "  Contrasena VARCHAR(100) NOT NULL," +
+            "  Contrasena VARCHAR(200) NOT NULL," +
             "  TipoUsuario VARCHAR(20) NOT NULL" +
             ");";
 
@@ -60,7 +63,7 @@ public class SetupBD {
             System.out.println("Tablas creadas o ya existentes.");
 
             boolean tieneVioTop10 = false;
-            try (java.sql.ResultSet rs = stmt.executeQuery("PRAGMA table_info(Usuario);")) {
+            try (ResultSet rs = stmt.executeQuery("PRAGMA table_info(Usuario);")) {
                 while (rs.next()) {
                     String nombreCol = rs.getString("name");
                     if ("VioTop10".equalsIgnoreCase(nombreCol)) {
@@ -81,6 +84,53 @@ public class SetupBD {
 
         } catch (SQLException e) {
             System.err.println("Error al crear las tablas: " + e.getMessage());
+        }
+
+        crearUsuariosIniciales(conn);
+    }
+
+    /**
+     * Crea las cuentas de prueba documentadas en el README si no existen.
+     */
+    private static void crearUsuariosIniciales(Connection conn) {
+        insertarSiNoExiste(conn, "alan@gmail.com", "12345678", "CLIENTE", 36123456L, "Alan", "Prieto");
+        insertarSiNoExiste(conn, "admin1@streaming.com", "admin123", "ADMIN", 10000001L, "Admin", "Streaming");
+    }
+
+    /**
+     * Inserta un usuario de prueba solo si su email no está registrado.
+     */
+    private static void insertarSiNoExiste(Connection conn, String email, String contrasena,
+            String tipoUsuario, long dni, String nombre, String apellido) {
+        if (emailExiste(conn, email)) {
+            return;
+        }
+
+        String sql = "INSERT INTO Usuario (DNI, Nombre, Apellido, Email, Contrasena, TipoUsuario) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, dni);
+            pstmt.setString(2, nombre);
+            pstmt.setString(3, apellido);
+            pstmt.setString(4, email);
+            pstmt.setString(5, PasswordUtil.hash(contrasena));
+            pstmt.setString(6, tipoUsuario);
+            pstmt.executeUpdate();
+            System.out.println("Usuario inicial creado: " + email);
+        } catch (SQLException e) {
+            System.err.println("Error al crear usuario inicial " + email + ": " + e.getMessage());
+        }
+    }
+
+    private static boolean emailExiste(Connection conn, String email) {
+        String check = "SELECT 1 FROM Usuario WHERE Email = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(check)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al verificar email inicial: " + e.getMessage());
+            return true;
         }
     }
 }

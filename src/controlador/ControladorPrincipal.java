@@ -113,12 +113,18 @@ public class ControladorPrincipal implements ActionListener {
                 vista.lblBienvenida.setVisible(false);
             }
             String q = vista.txtBusqueda.getText().trim();
-            
+
             if (q.isEmpty()) {
                 JOptionPane.showMessageDialog(vista, "Por favor ingresa un término de búsqueda.");
                 return;
             }
-            
+
+            List<Pelicula> locales = servicio.buscarPeliculasPorTitulo(q);
+            if (locales != null && !locales.isEmpty()) {
+                cargarPeliculas(locales);
+                return;
+            }
+
             JDialog dialogoCarga = new JDialog(vista, "Buscando en OMDb...", true);
             dialogoCarga.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
             dialogoCarga.setSize(300, 100);

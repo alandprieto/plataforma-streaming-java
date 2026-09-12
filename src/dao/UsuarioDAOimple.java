@@ -12,6 +12,7 @@ import database.ConexionBD;
 import modelo.Administrador;
 import modelo.Cliente;
 import modelo.Usuario;
+import util.PasswordUtil;
 
 /**
  * Implementación DAO para operaciones de Usuario en base de datos.
@@ -25,6 +26,10 @@ public class UsuarioDAOimple implements UsuarioDAO {
     public boolean guardar(Usuario usuario) {
         String sql = "INSERT INTO Usuario (DNI, Nombre, Apellido, Email, Contrasena, TipoUsuario) VALUES (?, ?, ?, ?, ?, ?)";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return false;
+        }
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -32,7 +37,7 @@ public class UsuarioDAOimple implements UsuarioDAO {
             pstmt.setString(2, usuario.getNombre());
             pstmt.setString(3, usuario.getApellido());
             pstmt.setString(4, usuario.getEmail());
-            pstmt.setString(5, usuario.getContrasena());
+            pstmt.setString(5, PasswordUtil.hash(usuario.getContrasena()));
 
             if (usuario instanceof Administrador) {
                 pstmt.setString(6, "ADMIN");
@@ -63,6 +68,10 @@ public class UsuarioDAOimple implements UsuarioDAO {
     public Usuario buscarPorId(int id) {
         String sql = "SELECT * FROM Usuario WHERE ID = ?";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return null;
+        }
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -85,6 +94,10 @@ public class UsuarioDAOimple implements UsuarioDAO {
         List<Usuario> usuarios = new ArrayList<>();
         String sql = "SELECT * FROM Usuario";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return usuarios;
+        }
 
         try (Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
@@ -108,6 +121,10 @@ public class UsuarioDAOimple implements UsuarioDAO {
     public void eliminar(int id) {
         String sql = "DELETE FROM Usuario WHERE ID = ?";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return;
+        }
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -119,18 +136,36 @@ public class UsuarioDAOimple implements UsuarioDAO {
 
     /**
      * Autentica un usuario con email y contraseña.
+     * Si la contraseña estaba almacenada en texto plano (datos antiguos),
+     * la migra a hash en el primer login exitoso.
      */
     @Override
     public Usuario autenticar(String email, String contrasena) {
-        String sql = "SELECT * FROM Usuario WHERE Email = ? AND Contrasena = ?";
+        String sql = "SELECT * FROM Usuario WHERE Email = ?";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return null;
+        }
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
-            pstmt.setString(2, contrasena);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
+                    String almacenada = rs.getString("Contrasena");
+                    boolean coincide;
+                    if (PasswordUtil.esHash(almacenada)) {
+                        coincide = PasswordUtil.verificar(contrasena, almacenada);
+                    } else {
+                        coincide = almacenada.equals(contrasena);
+                    }
+                    if (!coincide) {
+                        return null;
+                    }
+                    if (!PasswordUtil.esHash(almacenada)) {
+                        actualizarHash(email, PasswordUtil.hash(contrasena));
+                    }
                     return mapResultSetToUsuario(rs);
                 }
             }
@@ -141,12 +176,35 @@ public class UsuarioDAOimple implements UsuarioDAO {
     }
 
     /**
+     * Actualiza la contraseña de un usuario por su valor ya hasheado.
+     */
+    private void actualizarHash(String email, String hashNuevo) {
+        String sql = "UPDATE Usuario SET Contrasena = ? WHERE Email = ?";
+        Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            return;
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, hashNuevo);
+            pstmt.setString(2, email);
+            pstmt.executeUpdate();
+            System.out.println("Contraseña migrada a hash para: " + email);
+        } catch (SQLException e) {
+            System.err.println("Error al migrar contraseña: " + e.getMessage());
+        }
+    }
+
+    /**
      * Verifica si un DNI ya existe en la base de datos.
      */
     @Override
     public boolean dniExiste(long dni) {
         String sql = "SELECT 1 FROM Usuario WHERE DNI = ?";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return false;
+        }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, dni);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -165,6 +223,10 @@ public class UsuarioDAOimple implements UsuarioDAO {
     public boolean emailExiste(String email) {
         String sql = "SELECT 1 FROM Usuario WHERE Email = ?";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return false;
+        }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -183,6 +245,10 @@ public class UsuarioDAOimple implements UsuarioDAO {
     public boolean haVistoTop10(int id) {
         String sql = "SELECT VioTop10 FROM Usuario WHERE ID = ?";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return false;
+        }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -204,6 +270,10 @@ public class UsuarioDAOimple implements UsuarioDAO {
     public void marcarVioTop10(int id) {
         String sql = "UPDATE Usuario SET VioTop10 = 1 WHERE ID = ?";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return;
+        }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
@@ -230,7 +300,7 @@ public class UsuarioDAOimple implements UsuarioDAO {
         usuario.setNombre(rs.getString("Nombre"));
         usuario.setApellido(rs.getString("Apellido"));
         usuario.setEmail(rs.getString("Email"));
-        usuario.setContrasena(rs.getString("Contrasena"));
+        usuario.setContrasena("");
         try {
             int v = rs.getInt("VioTop10");
             usuario.setVistoTop10(v == 1);

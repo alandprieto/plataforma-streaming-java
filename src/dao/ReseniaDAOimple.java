@@ -22,6 +22,10 @@ public class ReseniaDAOimple implements ReseniaDAO {
     public boolean guardar(Resenia resenia) {
         String sql = "INSERT INTO Resena (UsuarioID, PeliculaID, Comentario, Puntaje, Aprobada, FechaHora) VALUES (?, ?, ?, ?, ?, ?)";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return false;
+        }
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, resenia.getUsuario().getID());
@@ -44,6 +48,10 @@ public class ReseniaDAOimple implements ReseniaDAO {
     public boolean existeResena(int idUsuario, int idPelicula) {
         String sql = "SELECT 1 FROM Resena WHERE UsuarioID = ? AND PeliculaID = ?";
         Connection conn = ConexionBD.getConnection();
+        if (conn == null) {
+            System.err.println("Sin conexión a la base de datos.");
+            return false;
+        }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, idUsuario);
             pstmt.setInt(2, idPelicula);

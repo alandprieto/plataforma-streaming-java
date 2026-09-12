@@ -1,5 +1,6 @@
 package servicio;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 
@@ -90,7 +91,17 @@ public class AppImple {
      * Verifica si hay películas cargadas en la base de datos.
      */
     public boolean hayPeliculasCargadas() {
-        return !peliculaDAO.listarTodas().isEmpty();
+        return peliculaDAO.existePelicula();
+    }
+
+    /**
+     * Busca películas en el catálogo local por título.
+     */
+    public List<Pelicula> buscarPeliculasPorTitulo(String titulo) {
+        if (titulo == null || titulo.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return peliculaDAO.buscarPorTitulo(titulo.trim());
     }
 
     /**

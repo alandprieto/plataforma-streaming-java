@@ -17,4 +17,14 @@ public interface PeliculaDAO {
      * Lista todas las películas de la base de datos.
      */
     List<Pelicula> listarTodas();
+
+    /**
+     * Verifica si hay al menos una película registrada.
+     */
+    boolean existePelicula();
+
+    /**
+     * Busca películas cuyo título contenga el texto indicado.
+     */
+    List<Pelicula> buscarPorTitulo(String titulo);
 }
