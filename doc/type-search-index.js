@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.streaming.plataforma","l":"Capitulo"},{"p":"com.streaming.plataforma","l":"Contenido"},{"p":"com.streaming.plataforma","l":"Serie"},{"p":"com.streaming.plataforma","l":"Staff"},{"p":"com.streaming.plataforma","l":"Temporada"}];updateSearchResults();

@@ -6,7 +6,7 @@ import vista.VistaRegistro;
 import vista.VistaLogin;
 import excepciones.UsuarioYaExisteException;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

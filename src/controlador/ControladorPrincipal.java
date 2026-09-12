@@ -1,25 +1,48 @@
 package controlador;
 
+import comparador.ComparadorPeliculaGenero;
+import comparador.ComparadorPeliculaTitulo;
+import excepciones.DatoInvalidoException;
 import modelo.Pelicula;
-import modelo.Reseña;
+import modelo.Resenia;
 import modelo.Usuario;
 import servicio.AppImple;
 import servicio.ConsultaPeliculasOMDb;
-import vista.VistaPrincipal;
-import vista.VistaLogin;
 import vista.VistaDetallesPelicula;
-import excepciones.DatoInvalidoException;
-import comparador.ComparadorPeliculaGenero;
-import comparador.ComparadorPeliculaTitulo;
+import vista.VistaLogin;
+import vista.VistaPrincipal;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
+
 import org.json.JSONObject;
 
 public class ControladorPrincipal implements ActionListener {
@@ -280,8 +303,8 @@ public class ControladorPrincipal implements ActionListener {
      */
     private void guardarResena(Pelicula p, String comentario, int puntaje, JDialog dialogo) {
         try {
-            Reseña r = new Reseña(usuario, p.getID(), comentario, puntaje);
-            servicio.registrarReseña(r);
+            Resenia r = new Resenia(usuario, p.getID(), comentario, puntaje);
+            servicio.registrarResenia(r);
             JOptionPane.showMessageDialog(vista, "¡Gracias! Tu reseña ha sido guardada.");
             dialogo.dispose();
 
@@ -305,7 +328,7 @@ public class ControladorPrincipal implements ActionListener {
             try {
                 if (urlString == null || urlString.isEmpty())
                     throw new Exception("No URL");
-                URL url = new URL(urlString);
+                URL url = new URI(urlString).toURL();
                 BufferedImage img = ImageIO.read(url);
                 if (img != null) {
                     Image scaled = img.getScaledInstance(150, 225, Image.SCALE_SMOOTH);

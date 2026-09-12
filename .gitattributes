@@ -1,0 +1,9 @@
+* text=auto
+
+# Código fuente y markdown: final de línea LF (compatible con Windows y Unix)
+*.java text eol=lf
+*.md text eol=lf
+*.csv text eol=lf
+
+# Scripts de Windows: final de línea CRLF
+*.bat text eol=crlf

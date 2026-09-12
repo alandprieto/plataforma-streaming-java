@@ -11,6 +11,15 @@ public class ConexionBD {
     private static final String URL_SQLITE = "jdbc:sqlite:streaming.db";
     private static Connection connection = null;
 
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                cerrarConexion();
+            }
+        });
+    }
+
     /**
      * Constructor privado para evitar instanciación.
      */

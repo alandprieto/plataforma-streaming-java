@@ -8,10 +8,10 @@ import vista.VistaRegistro;
 import excepciones.CredencialesInvalidasException;
 import database.AutoCargaPeliculas;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

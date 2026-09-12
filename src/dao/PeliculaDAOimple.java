@@ -1,13 +1,18 @@
 package dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+
+import database.ConexionBD;
 import enums.GeneroPelicula;
 import modelo.Pelicula;
 import modelo.Staff;
-import database.ConexionBD;
-import java.time.Duration;
 
 /**
  * Implementación DAO para operaciones de Pelicula en base de datos.
@@ -40,24 +45,10 @@ public class PeliculaDAOimple implements PeliculaDAO {
      */
     @Override
     public List<Pelicula> listarTodas() {
-        return buscarPorSql("SELECT * FROM Pelicula ORDER BY RatingPromedio DESC");
-    }
-
-    /**
-     * Busca películas por título.
-     */
-    @Override
-    public List<Pelicula> buscarPorTitulo(String titulo) {
-        return buscarPorSql("SELECT * FROM Pelicula WHERE Titulo LIKE '%" + titulo + "%'");
-    }
-
-    /**
-     * Ejecuta una consulta SQL y retorna una lista de películas.
-     */
-    private List<Pelicula> buscarPorSql(String sql) {
         List<Pelicula> peliculas = new ArrayList<>();
         Connection conn = ConexionBD.getConnection();
-        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        try (Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM Pelicula ORDER BY RatingPromedio DESC")) {
             while (rs.next()) {
                 Pelicula p = new Pelicula();
                 p.setID(rs.getInt("ID"));
@@ -78,27 +69,5 @@ public class PeliculaDAOimple implements PeliculaDAO {
             System.err.println("Error listando películas: " + e.getMessage());
         }
         return peliculas;
-    }
-
-    /**
-     * Verifica si una película existe por su ID.
-     */
-    @Override
-    public boolean existePelicula(int id) {
-        return false;
-    }
-
-    /**
-     * Elimina una película por su ID.
-     */
-    @Override
-    public void eliminar(int id) {
-    }
-
-    /**
-     * Actualiza una película en la base de datos.
-     */
-    @Override
-    public void actualizar(Pelicula pelicula) {
     }
 }

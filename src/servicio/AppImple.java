@@ -2,10 +2,22 @@ package servicio;
 
 import java.util.List;
 import java.util.Collections;
-import dao.*;
+
+import comparador.ComparadorPeliculaRating;
+import dao.PeliculaDAO;
+import dao.PeliculaDAOimple;
+import dao.ReseniaDAO;
+import dao.ReseniaDAOimple;
+import dao.UsuarioDAO;
+import dao.UsuarioDAOimple;
 import database.ConexionBD;
-import excepciones.*;
-import modelo.*;
+import excepciones.CredencialesInvalidasException;
+import excepciones.DatoInvalidoException;
+import excepciones.UsuarioYaExisteException;
+import modelo.Cliente;
+import modelo.Pelicula;
+import modelo.Resenia;
+import modelo.Usuario;
 
 /**
  * Implementación del servicio de aplicación con lógica de negocio.
@@ -13,7 +25,7 @@ import modelo.*;
 public class AppImple {
     private UsuarioDAO usuarioDAO;
     private PeliculaDAO peliculaDAO;
-    private ReseñaDAO reseñaDAO;
+    private ReseniaDAO reseniaDAO;
 
     /**
      * Constructor que inicializa los DAOs.
@@ -21,7 +33,7 @@ public class AppImple {
     public AppImple() {
         this.usuarioDAO = new UsuarioDAOimple();
         this.peliculaDAO = new PeliculaDAOimple();
-        this.reseñaDAO = new ReseñaDAOimple();
+        this.reseniaDAO = new ReseniaDAOimple();
         ConexionBD.getConnection();
     }
 
@@ -55,27 +67,20 @@ public class AppImple {
     /**
      * Registra una nueva reseña con validaciones.
      */
-    public void registrarReseña(Reseña nuevaReseña) throws DatoInvalidoException {
-        if (nuevaReseña.getCalificacion() < 1 || nuevaReseña.getCalificacion() > 10) {
+    public void registrarResenia(Resenia nuevaResenia) throws DatoInvalidoException {
+        if (nuevaResenia.getCalificacion() < 1 || nuevaResenia.getCalificacion() > 10) {
             throw new DatoInvalidoException("La calificación debe ser entre 1 y 10.");
         }
 
-        if (nuevaReseña.getComentario() == null || nuevaReseña.getComentario().trim().isEmpty()) {
+        if (nuevaResenia.getComentario() == null || nuevaResenia.getComentario().trim().isEmpty()) {
             throw new DatoInvalidoException("Debes escribir un comentario para tu reseña.");
         }
 
-        if (reseñaDAO.existeResena(nuevaReseña.getUsuario().getID(), nuevaReseña.getIDContenido())) {
+        if (reseniaDAO.existeResena(nuevaResenia.getUsuario().getID(), nuevaResenia.getIDContenido())) {
             throw new DatoInvalidoException("Ya has calificado esta película anteriormente.");
         }
 
-        this.reseñaDAO.guardar(nuevaReseña);
-    }
-
-    /**
-     * Busca películas por título.
-     */
-    public List<Pelicula> buscarPeliculasPorTitulo(String titulo) {
-        return peliculaDAO.buscarPorTitulo(titulo);
+        this.reseniaDAO.guardar(nuevaResenia);
     }
 
     /**
@@ -99,7 +104,7 @@ public class AppImple {
         List<Pelicula> todas = peliculaDAO.listarTodas();
         if (todas == null || todas.isEmpty())
             return todas;
-        todas.sort((p1, p2) -> Double.compare(p2.getRatingPromedio(), p1.getRatingPromedio()));
+        todas.sort(new ComparadorPeliculaRating());
         return todas.subList(0, Math.min(10, todas.size()));
     }
 
@@ -118,7 +123,7 @@ public class AppImple {
      * Verifica si un usuario ya calificó una película.
      */
     public boolean yaCalificoUsuario(int idUsuario, int idPelicula) {
-        return reseñaDAO.existeResena(idUsuario, idPelicula);
+        return reseniaDAO.existeResena(idUsuario, idPelicula);
     }
 
     /**

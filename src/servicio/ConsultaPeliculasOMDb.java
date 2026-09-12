@@ -1,9 +1,14 @@
 package servicio;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
 import org.json.JSONObject;
 
 /**
@@ -11,8 +16,7 @@ import org.json.JSONObject;
  */
 public class ConsultaPeliculasOMDb {
 
-    // Reemplaza con tu API Key obtenida en https://www.omdbapi.com/apikey.aspx
-    private static final String API_KEY = "74e5c254";
+    private static final String URL_API_OMDB = "https://www.omdbapi.com/";
 
     /**
      * Consulta la API de OMDb por título exacto.
@@ -23,13 +27,15 @@ public class ConsultaPeliculasOMDb {
             return null;
         }
 
-        try {
-            if (API_KEY.equals("TU_API_KEY")) {
-                System.err.println("⚠️  API_KEY no configurada en ConsultaPeliculasOMDb.java");
-                return null;
-            }
+        String apiKey = obtenerApiKey();
+        if (apiKey == null) {
+            System.err.println("API key de OMDb no configurada.");
+            System.err.println("Definí la variable de entorno OMDB_API_KEY o creá un archivo omdb.properties con la propiedad omdb.api.key.");
+            return null;
+        }
 
-            String url = "https://www.omdbapi.com/?t=" + titulo.replace(" ", "+") + "&apikey=" + API_KEY;
+        try {
+            String url = URL_API_OMDB + "?t=" + titulo.trim().replace(" ", "+") + "&apikey=" + apiKey;
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -42,7 +48,7 @@ public class ConsultaPeliculasOMDb {
             if (json.has("Response") && json.getString("Response").equals("True")) {
                 return json;
             } else {
-                System.out.println("❌ Película no encontrada: " + titulo);
+                System.out.println("Película no encontrada: " + titulo);
                 return null;
             }
 
@@ -50,6 +56,33 @@ public class ConsultaPeliculasOMDb {
             System.err.println("Error al consultar la API: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Obtiene la API key de OMDb desde la variable de entorno OMDB_API_KEY
+     * o, en su defecto, desde el archivo omdb.properties (propiedad omdb.api.key).
+     */
+    private static String obtenerApiKey() {
+        String key = System.getenv("OMDB_API_KEY");
+        if (key != null && !key.trim().isEmpty()) {
+            return key.trim();
+        }
+
+        Path archivo = Path.of("omdb.properties");
+        if (Files.exists(archivo)) {
+            try (InputStream in = Files.newInputStream(archivo)) {
+                Properties props = new Properties();
+                props.load(in);
+                String fromFile = props.getProperty("omdb.api.key");
+                if (fromFile != null && !fromFile.trim().isEmpty()) {
+                    return fromFile.trim();
+                }
+            } catch (IOException e) {
+                System.err.println("No se pudo leer omdb.properties: " + e.getMessage());
+            }
+        }
+
+        return null;
     }
 
     /**

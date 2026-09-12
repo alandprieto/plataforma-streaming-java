@@ -28,9 +28,9 @@ El proyecto sigue una arquitectura **MVC** (Modelo-Vista-Controlador) combinada 
 
 - `src/vista/` → Interfaces gráficas con Java Swing.
 - `src/controlador/` → Manejo de eventos de UI y coordinación con la lógica de negocio.
-- `src/modelo/` → Entidades del dominio (`Usuario`, `Pelicula`, `Reseña`, `Contenido`, ...).
+- `src/modelo/` → Entidades del dominio (`Usuario`, `Pelicula`, `Resenia`, `Contenido`, ...).
 - `src/servicio/` → Lógica de negocio (`AppImple`) e integración con OMDb.
-- `src/dao/` → Interfaces e implementaciones DAO (`Usuario`, `Pelicula`, `Reseña`).
+- `src/dao/` → Interfaces e implementaciones DAO (`Usuario`, `Pelicula`, `Resenia`).
 - `src/database/` → Gestión de la conexión SQLite, creación de tablas y precarga de datos.
 
 ## 📁 Estructura del Proyecto
@@ -47,8 +47,8 @@ src/
 ├── servicio/       # AppImple y ConsultaPeliculasOMDb
 └── vista/          # Vistas Swing
 lib/                # Dependencias externas (sqlite-jdbc, json)
-doc/                # Documentación Javadoc generada
-streaming.db        # Base SQLite (se genera la primera vez que se ejecuta)
+streaming.db        # Base SQLite (se genera la primera vez que se ejecuta; está en .gitignore)
+omdb.properties     # API key de OMDb (opcional, local, está en .gitignore)
 ```
 
 ## ✅ Requisitos
@@ -92,12 +92,19 @@ También podés registrar un nuevo usuario desde la pantalla de login.
 
 ## 🔌 API de OMDb
 
-Las consultas a OMDb usan una API key embebida en `src/servicio/ConsultaPeliculasOMDb.java`. Si la clave deja de funcionar, registrate en [omdbapi.com](https://www.omdbapi.com/apikey.aspx) y reemplazá el valor de `API_KEY`.
+Las consultas a OMDb necesitan una API key. Para configurarla, a elección:
+
+1. **Variable de entorno:** definir `OMDB_API_KEY=tu_clave`.
+2. **Archivo local** `omdb.properties` (ignorado por git) con:
+   `omdb.api.key=tu_clave`
+
+Si la clave no está configurada, las búsquedas de OMDb muestran "sin resultados" pero el resto de la app funciona normal. Obtené una clave gratuita en [omdbapi.com](https://www.omdbapi.com/apikey.aspx).
 
 ## 🧪 Notas de diseño
 
 - Las reseñas se consideran aprobadas al momento de guardarse (el flujo de moderación de administradores no se expone en la UI actual).
 - `streaming.db` y los posteres se almacenan de forma local; el catálogo fuente es `src/database/movies_database.csv`.
+- La base de datos, los archivos compilados (`bin/`) y la documentación generada (`doc/`) no se versionan (ver `.gitignore`).
 
 ## 📌 Proyecto académico
 

@@ -14,9 +14,9 @@ public class Pelicula extends Contenido {
      * Constructor con todos los parámetros de película.
      */
     public Pelicula(String titulo, GeneroPelicula genero, String sinopsis, Staff director, double puntaje, int vistas,
-            Path video, List<Reseña> reseñas, int ID, Duration duracion, int anio, double ratingPromedio,
+            Path video, List<Resenia> resenias, int ID, Duration duracion, int anio, double ratingPromedio,
             String posterURL) {
-        super(titulo, genero, sinopsis, director, puntaje, vistas, video, reseñas, ID, anio, ratingPromedio, posterURL);
+        super(titulo, genero, sinopsis, director, puntaje, vistas, video, resenias, ID, anio, ratingPromedio, posterURL);
         this.duracion = duracion;
     }
 

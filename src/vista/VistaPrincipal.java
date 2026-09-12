@@ -1,7 +1,18 @@
 package vista;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 
 /**
  * Ventana principal de la aplicación de streaming.
@@ -11,7 +22,6 @@ public class VistaPrincipal extends JFrame {
     public JTextField txtBusqueda;
     public JButton btnBuscar;
     public JButton btnExplorar;
-    public JButton btnCargarPeliculas;
     public JButton btnCerrarSesion;
     public JButton btnOrdenarGenero;
     public JButton btnOrdenarTitulo;
@@ -42,9 +52,6 @@ public class VistaPrincipal extends JFrame {
 
         btnExplorar = new JButton("Explorar (Aleatorias)");
 
-        btnCargarPeliculas = new JButton("Cargar Películas (CSV)");
-        btnCargarPeliculas.setVisible(false);
-
         btnOrdenarGenero = new JButton("Ordenar por Género");
         btnOrdenarTitulo = new JButton("Ordenar por Título");
 
@@ -56,7 +63,6 @@ public class VistaPrincipal extends JFrame {
         panelSuperior.add(btnExplorar);
         panelSuperior.add(btnOrdenarGenero);
         panelSuperior.add(btnOrdenarTitulo);
-        panelSuperior.add(btnCargarPeliculas);
         panelSuperior.add(btnCerrarSesion);
 
         JPanel topContainer = new JPanel();

@@ -14,7 +14,7 @@ public abstract class Contenido {
     private double puntaje;
     private int vistas;
     private Path video;
-    private List<Reseña> reseñas;
+    private List<Resenia> resenias;
     private int ID;
     private int anio;
     private double ratingPromedio;
@@ -30,7 +30,7 @@ public abstract class Contenido {
      * Constructor con todos los parámetros del contenido.
      */
     public Contenido(String titulo, GeneroPelicula genero, String sinopsis, Staff director, Double puntaje, int vistas,
-            Path video, List<Reseña> reseñas, int ID, int anio, double ratingPromedio, String posterURL) {
+            Path video, List<Resenia> resenias, int ID, int anio, double ratingPromedio, String posterURL) {
         this.titulo = titulo;
         this.genero = genero;
         this.sinopsis = sinopsis;
@@ -38,7 +38,7 @@ public abstract class Contenido {
         this.puntaje = puntaje;
         this.vistas = vistas;
         this.video = video;
-        this.reseñas = reseñas;
+        this.resenias = resenias;
         this.ID = ID;
         this.anio = anio;
         this.ratingPromedio = ratingPromedio;
@@ -98,15 +98,15 @@ public abstract class Contenido {
      * Calcula y actualiza el puntaje promedio basado en todas las reseñas.
      */
     public void setPuntaje() {
-        if (reseñas == null || reseñas.isEmpty()) {
+        if (resenias == null || resenias.isEmpty()) {
             this.puntaje = 0.0;
             return;
         }
         double sum = 0;
-        for (Reseña reseña : reseñas) {
-            sum += reseña.getCalificacion();
+        for (Resenia resenia : resenias) {
+            sum += resenia.getCalificacion();
         }
-        this.puntaje = sum / reseñas.size();
+        this.puntaje = sum / resenias.size();
     }
 
     /**
@@ -140,15 +140,15 @@ public abstract class Contenido {
     /**
      * Obtiene la lista de reseñas del contenido.
      */
-    public List<Reseña> getReseñas() {
-        return reseñas;
+    public List<Resenia> getResenias() {
+        return resenias;
     }
 
     /**
      * Establece la lista de reseñas del contenido.
      */
-    public void setReseñas(List<Reseña> reseñas) {
-        this.reseñas = reseñas;
+    public void setResenias(List<Resenia> resenias) {
+        this.resenias = resenias;
     }
 
     /**

@@ -1,0 +1,37 @@
+# Compilación
+bin/
+out/
+*.class
+sources.txt
+
+# Aplicación compilada
+project 2.jar
+
+# Base de datos SQLite generada
+streaming.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Configuración de IDE / editor
+.vscode/
+.idea/
+*.iml
+
+# Documentación generada
+doc/
+
+# Configuración local de opencode
+.agents/
+
+# Credenciales y secretos
+omdb.properties
+.env
+*.local
+
+# Logs
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

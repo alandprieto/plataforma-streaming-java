@@ -111,12 +111,7 @@ public class UsuarioDAOimple implements UsuarioDAO {
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
-            int filasAfectadas = pstmt.executeUpdate();
-            if (filasAfectadas > 0) {
-                System.out.println("--> Usuario con ID " + id + " eliminado correctamente.");
-            } else {
-                System.out.println("No se encontró usuario con ID " + id);
-            }
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Error al eliminar usuario: " + e.getMessage());
         }
@@ -193,7 +188,6 @@ public class UsuarioDAOimple implements UsuarioDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     int val = rs.getInt("VioTop10");
-                    System.out.println("[UsuarioDAO] haVistoTop10 for ID=" + id + " -> " + val);
                     return val == 1;
                 }
             }
@@ -213,7 +207,6 @@ public class UsuarioDAOimple implements UsuarioDAO {
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
-            System.out.println("[UsuarioDAO] marcarVioTop10 ejecutado para ID=" + id);
         } catch (SQLException e) {
             System.err.println("Error al marcar VioTop10: " + e.getMessage());
         }
@@ -242,6 +235,7 @@ public class UsuarioDAOimple implements UsuarioDAO {
             int v = rs.getInt("VioTop10");
             usuario.setVistoTop10(v == 1);
         } catch (SQLException ex) {
+            System.err.println("No se pudo leer la columna VioTop10: " + ex.getMessage());
         }
 
         return usuario;
