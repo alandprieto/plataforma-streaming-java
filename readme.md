@@ -6,7 +6,7 @@
 ![MVC](https://img.shields.io/badge/MVC-Modelo--Vista--Controlador-6f42c1?style=for-the-badge)
 ![DAO](https://img.shields.io/badge/DAO-Acceso%20a%20datos-28a745?style=for-the-badge)
 ![OMDb](https://img.shields.io/badge/API-OMDb-14a0c4?style=for-the-badge)
-![GitHub last commit](https://img.shields.io/github/last-commit/alandprieto/ProyectoTL2?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/alandprieto/plataforma-streaming-java?style=for-the-badge)
 
 Aplicación de escritorio de una plataforma de streaming desarrollada en **Java Swing**, con persistencia en **SQLite** e integración con la **API de OMDb**. Corresponde al Entregable 2 del *Taller de Lenguajes II* (UNLP, 2025) como prueba de concepto.
 
