@@ -30,6 +30,9 @@ Permite registrar e iniciar sesión, explorar un catálogo de ~10.000 películas
 ### Catálogo principal
 ![Catálogo](docs/catalogo.png)
 
+### Búsqueda de películas
+![Búsqueda](docs/busqueda.gif)
+
 ## 🧱 Arquitectura
 
 El proyecto sigue una arquitectura **MVC** (Modelo-Vista-Controlador) combinada con el patrón **DAO** para el acceso a datos:
