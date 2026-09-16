@@ -22,6 +22,14 @@ Permite registrar e iniciar sesión, explorar un catálogo de ~10.000 películas
 - **Interfaz no bloqueante:** carga de posteres y consultas HTTP en hilos separados (`SwingWorker` / `invokeLater`).
 - **Persistencia:** SQLite con patrón DAO y precarga automática del catálogo desde un CSV si la base está vacía.
 
+## 📸 Capturas de pantalla
+
+### Inicio de sesión
+![Login](docs/login.png)
+
+### Catálogo principal
+![Catálogo](docs/catalogo.png)
+
 ## 🧱 Arquitectura
 
 El proyecto sigue una arquitectura **MVC** (Modelo-Vista-Controlador) combinada con el patrón **DAO** para el acceso a datos:
